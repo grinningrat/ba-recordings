@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio Player</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1 {
+            color: #333;
+        }
+        .audio-player {
+            margin: 20px 0;
+        }
+        .audio-list {
+            list-style-type: none;
+            padding: 0;
+        }
+        .audio-list li {
+            cursor: pointer;
+            padding: 10px;
+            background-color: #fff;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        .audio-list li:hover {
+            background-color: #e0e0e0;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Audio Player</h1>
+
+    <ul class="audio-list">
+        <li data-src="audio1.mp3">Audio File 1</li>
+        <li data-src="audio2.mp3">Audio File 2</li>
+        <li data-src="audio3.mp3">Audio File 3</li>
+    </ul>
+
+    <div class="audio-player">
+        <audio id="audioPlayer" controls>
+            <source id="audioSource" src="" type="audio/mpeg">
+            Your browser does not support the audio element.
+        </audio>
+    </div>
+
+    <script>
+        // Get elements from the DOM
+        const audioPlayer = document.getElementById('audioPlayer');
+        const audioSource = document.getElementById('audioSource');
+        const audioListItems = document.querySelectorAll('.audio-list li');
+
+        // Add click event listener to each list item
+        audioListItems.forEach(item => {
+            item.addEventListener('click', function() {
+                // Get the data attribute (audio source) from the clicked item
+                const audioSrc = this.getAttribute('data-src');
+                // Set the audio source to the selected file
+                audioSource.src = audioSrc;
+                // Load and play the audio
+                audioPlayer.load();
+                audioPlayer.play();
+            });
+        });
+    </script>
+
+</body>
+</html>
