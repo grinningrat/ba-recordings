@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Audio Player</title>
+    <title>Audio Player with Visualizer</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -69,6 +69,15 @@
             border: none;
             outline: none;
         }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 150px;
+            background-color: #333;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
@@ -88,26 +97,64 @@
                 Your browser does not support the audio element.
             </audio>
         </div>
+
+        <canvas id="visualizer"></canvas>
     </div>
 
     <script>
-        // Get elements from the DOM
         const audioPlayer = document.getElementById('audioPlayer');
         const audioSource = document.getElementById('audioSource');
         const audioListItems = document.querySelectorAll('.audio-list li');
+        const canvas = document.getElementById('visualizer');
+        const canvasCtx = canvas.getContext('2d');
 
-        // Add click event listener to each list item
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const analyser = audioContext.createAnalyser();
+        const source = audioContext.createMediaElementSource(audioPlayer);
+
+        source.connect(analyser);
+        analyser.connect(audioContext.destination);
+        analyser.fftSize = 256;
+
+        const bufferLength = analyser.frequencyBinCount;
+        const dataArray = new Uint8Array(bufferLength);
+
+        function draw() {
+            requestAnimationFrame(draw);
+
+            analyser.getByteFrequencyData(dataArray);
+
+            canvasCtx.fillStyle = '#333';
+            canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
+
+            const barWidth = (canvas.width / bufferLength) * 2.5;
+            let barHeight;
+            let x = 0;
+
+            for (let i = 0; i < bufferLength; i++) {
+                barHeight = dataArray[i];
+
+                canvasCtx.fillStyle = `rgb(${barHeight + 100}, 50, 50)`;
+                canvasCtx.fillRect(x, canvas.height - barHeight / 2, barWidth, barHeight / 2);
+
+                x += barWidth + 1;
+            }
+        }
+
+        draw();
+
         audioListItems.forEach(item => {
             item.addEventListener('click', function() {
-                // Get the data attribute (audio source) from the clicked item
                 const audioSrc = this.getAttribute('data-src');
-                // Set the audio source to the selected file
                 audioSource.src = audioSrc;
-                // Load and play the audio
                 audioPlayer.load();
                 audioPlayer.play();
             });
         });
+
+        audioPlayer.onplay = () => {
+            audioContext.resume();
+        };
     </script>
 
 </body>
