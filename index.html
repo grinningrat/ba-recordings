@@ -7,52 +7,87 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f4f4f9;
+            background: linear-gradient(135deg, #FF6B6B, #FFD93D, #6BCB77);
+            background-size: 400% 400%;
+            animation: gradient 15s ease infinite;
+            height: 100vh;
             margin: 0;
-            padding: 20px;
             display: flex;
-            flex-direction: column;
+            justify-content: center;
             align-items: center;
+            color: #fff;
         }
+
+        @keyframes gradient {
+            0% {background-position: 0% 50%;}
+            50% {background-position: 100% 50%;}
+            100% {background-position: 0% 50%;}
+        }
+
         h1 {
-            color: #333;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            text-align: center;
         }
-        .audio-player {
-            margin: 20px 0;
+
+        .wrapper {
+            text-align: center;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
         }
+
         .audio-list {
             list-style-type: none;
             padding: 0;
+            max-width: 300px;
+            margin: 0 auto 20px;
         }
+
         .audio-list li {
             cursor: pointer;
             padding: 10px;
-            background-color: #fff;
+            background-color: rgba(255, 255, 255, 0.7);
             margin: 5px 0;
             border: 1px solid #ddd;
             border-radius: 5px;
             transition: background-color 0.3s;
+            color: #333;
         }
+
         .audio-list li:hover {
-            background-color: #e0e0e0;
+            background-color: rgba(255, 255, 255, 1);
+        }
+
+        .audio-player {
+            margin: 20px 0;
+        }
+
+        audio {
+            width: 100%;
+            border: none;
+            outline: none;
         }
     </style>
 </head>
 <body>
 
-    <h1>Audio Player</h1>
+    <div class="wrapper">
+        <h1>Audio Player</h1>
 
-    <ul class="audio-list">
-        <li data-src="audio1.mp3">Audio File 1</li>
-        <li data-src="audio2.mp3">Audio File 2</li>
-        <li data-src="audio3.mp3">Audio File 3</li>
-    </ul>
+        <ul class="audio-list">
+            <li data-src="audio1.mp3">Audio File 1</li>
+            <li data-src="audio2.mp3">Audio File 2</li>
+            <li data-src="audio3.mp3">Audio File 3</li>
+        </ul>
 
-    <div class="audio-player">
-        <audio id="audioPlayer" controls>
-            <source id="audioSource" src="" type="audio/mpeg">
-            Your browser does not support the audio element.
-        </audio>
+        <div class="audio-player">
+            <audio id="audioPlayer" controls>
+                <source id="audioSource" src="" type="audio/mpeg">
+                Your browser does not support the audio element.
+            </audio>
+        </div>
     </div>
 
     <script>
