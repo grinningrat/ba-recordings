@@ -102,58 +102,61 @@
 
     <script>
         const audioPlayer = document.getElementById('audioPlayer');
-        const audioSource = document.getElementById('audioSource');
-        const audioListItems = document.querySelectorAll('.audio-list li');
-        const canvas = document.getElementById('visualizer');
-        const canvasCtx = canvas.getContext('2d');
+const audioSource = document.getElementById('audioSource');
+const audioListItems = document.querySelectorAll('.audio-list li');
+const canvas = document.getElementById('visualizer');
+const canvasCtx = canvas.getContext('2d');
 
-        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        const analyser = audioContext.createAnalyser();
-        const source = audioContext.createMediaElementSource(audioPlayer);
+// Ensure audio context is resumed on user interaction
+const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+audioContext.resume().catch(err => console.log(err));
 
-        source.connect(analyser);
-        analyser.connect(audioContext.destination);
-        analyser.fftSize = 256;
+const analyser = audioContext.createAnalyser();
+const source = audioContext.createMediaElementSource(audioPlayer);
 
-        const bufferLength = analyser.frequencyBinCount;
-        const dataArray = new Uint8Array(bufferLength);
+source.connect(analyser);
+analyser.connect(audioContext.destination);
+analyser.fftSize = 256;
 
-        function draw() {
-            requestAnimationFrame(draw);
+const bufferLength = analyser.frequencyBinCount;
+const dataArray = new Uint8Array(bufferLength);
 
-            analyser.getByteFrequencyData(dataArray);
+function draw() {
+    requestAnimationFrame(draw);
 
-            canvasCtx.fillStyle = '#333';
-            canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
+    analyser.getByteFrequencyData(dataArray);
 
-            const barWidth = (canvas.width / bufferLength) * 2.5;
-            let barHeight;
-            let x = 0;
+    canvasCtx.fillStyle = '#333';
+    canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
 
-            for (let i = 0; i < bufferLength; i++) {
-                barHeight = dataArray[i];
+    const barWidth = (canvas.width / bufferLength) * 2.5;
+    let barHeight;
+    let x = 0;
 
-                canvasCtx.fillStyle = `rgb(${barHeight + 100}, 50, 50)`;
-                canvasCtx.fillRect(x, canvas.height - barHeight / 2, barWidth, barHeight / 2);
+    for (let i = 0; i < bufferLength; i++) {
+        barHeight = dataArray[i];
 
-                x += barWidth + 1;
-            }
-        }
+        canvasCtx.fillStyle = `rgb(${barHeight + 100}, 50, 50)`;
+        canvasCtx.fillRect(x, canvas.height - barHeight / 2, barWidth, barHeight / 2);
 
-        draw();
+        x += barWidth + 1;
+    }
+}
 
-        audioListItems.forEach(item => {
-            item.addEventListener('click', function() {
-                const audioSrc = this.getAttribute('data-src');
-                audioSource.src = audioSrc;
-                audioPlayer.load();
-                audioPlayer.play();
-            });
-        });
+draw();
 
-        audioPlayer.onplay = () => {
-            audioContext.resume();
-        };
+audioListItems.forEach(item => {
+    item.addEventListener('click', function() {
+        const audioSrc = this.getAttribute('data-src');
+        audioSource.src = audioSrc;
+        audioPlayer.load();
+        audioPlayer.play().catch(err => console.log(err));
+    });
+});
+
+audioPlayer.onplay = () => {
+    audioContext.resume().catch(err => console.log(err));
+};
     </script>
 
 </body>
